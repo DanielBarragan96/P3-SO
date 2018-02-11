@@ -1,8 +1,7 @@
 # P3-SO
 
 1.1 Versión paralela con hilos Posix
-Utilizando la librería Posix desarrolla una versión multihilos que haga el mismo cálculo de la serie armónica de manera que ahora se utilicen todos los núcleos del
-procesador y se obtenga el mismo resultado en menos tiempo.
+Utilizando la librería Posix desarrolla una versión multihilos que haga el mismo cálculo de la serie armónica de manera que ahora se utilicen todos los núcleos del procesador y se obtenga el mismo resultado en menos tiempo.
 Realiza pruebas con tu programa y toma tiempos que se lleva la ejecución, compara con el tiempo obtenido en la versión serial.
 
 1.2 Versión paralela con hilos implementados clonando procesos
