@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-#define NUM_THREADS 4
+#define NUM_THREADS 2
 #define NUM_VAL 100000
 
-static float cont=0.00;
+static float cont[NUM_THREADS];
 
 void *Contar(void *threadid)
 {
@@ -15,8 +15,7 @@ printf("Contar in %d\n",i);
 
    for(int j=i ; j<=NUM_VAL ; j+=NUM_THREADS)
     {
-      cont += (float) 1/j;
-      sleep(0.00001);
+      cont[i-1] += (float) 1/j;
     }
 
 printf("Contar out %d\n",i);
@@ -43,8 +42,13 @@ int main (int argc, char *argv[])
 
    for(t=1;t<=NUM_THREADS; t++)
       pthread_join(threads[t],(void*)&status);
+int index = 1;
+    while(index<NUM_THREADS)
+    {
+        cont[0] += cont[index++]; 
+    }
 
-   printf("El valor final del contador = %f\n",cont);
+   printf("El valor final del contador = %f\n",cont[0]);
 
    // Termina el hilo principal, si hay otros hilos, todos terminan
    exit(0);
