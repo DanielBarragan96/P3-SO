@@ -11,14 +11,11 @@ void *Contar(void *threadid)
 {
    int i = *((int*)&threadid);
 
-printf("Contar in %d\n",i);
-
    for(int j=i ; j<=NUM_VAL ; j+=NUM_THREADS)
     {
       cont[i-1] += (float) 1/j;
     }
 
-printf("Contar out %d\n",i);
    pthread_exit(NULL);
 }
 
