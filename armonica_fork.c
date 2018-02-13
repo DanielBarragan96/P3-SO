@@ -32,14 +32,21 @@ void Contar(int i)
         perror("shmat");
         exit(1);
 	}
+	
+	printf("Contar in %d\n",i);
 	   for(float j= (float) i ; j<=NUM_VAL ; j+=NUM_THREADS)
 	    {
 	      cont += 1/j;
 	    }
+
+	printf("Contar out %d con %f\n",i,cont);
+	//cont = cont* DIV;
+	
 	s=shm;
 	s=s+i-1;
 	*s=cont;
-	exit(0);
+	printf("valor retorno de %d es %f\n",i,*s);
+	return;
 }
 
 int main (int argc, char *argv[])
@@ -67,6 +74,7 @@ int main (int argc, char *argv[])
 			Contar(t);
 		}
             		wait(&status);
+			printf("WIFE IN\n");
    }
    
    for(t=1;t<=NUM_THREADS; t++)
