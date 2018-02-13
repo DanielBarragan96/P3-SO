@@ -9,52 +9,98 @@
 #define NUM_THREADS 4
 #define NUM_VAL 100000
 #define DIV 100000
-#define SHM_SIZE 1024
+#define SHM_SIZE 256
 
+//	http://users.cs.cf.ac.uk/Dave.Marshall/C/node27.html
+	float *shm, *s;
+	key_t key = 1000;	/* key to be passed to shmget() */ 
+	int shmflg; 		/* shmflg to be passed to shmget() */ 
+	int shmid; 		/* return value from shmget() */ 
+	int size=SHM_SIZE; 	/* size to be passed to shmget() */ 
 
-void Contar( int i, int shmiders)
+void Contar(int i)
 {
-float cont = 0;
+	float cont = 0.0;
+	key_t key = 1000;
+	
+	if ((shmid = shmget(key, sizeof(float)*NUM_THREADS, IPC_CREAT|0666)) < 0) {
+        perror("shmget");
+        exit(1);
+	}
 
-printf("Contar in %d\n",i);
+	if ((shm = shmat(shmid, NULL, 0)) == (float *) -1) {
+        perror("shmat");
+        exit(1);
+	}
+	
+	printf("Contar in %d\n",i);
+	   for(float j= (float) i ; j<=NUM_VAL ; j+=NUM_THREADS)
+	    {
+	      cont += 1/j;
+	    }
 
-   for(int j=i ; j<=NUM_VAL ; j+=NUM_THREADS)
-    {
-      cont += (float) 1/j;
-    }
-
-printf("Contar out %d\n",i);
-cont *= DIV;
-return (int) cont;
+	printf("Contar out %d con %f\n",i,cont);
+	//cont = cont* DIV;
+	
+	s=shm;
+	s=s+i-1;
+	*s=cont;
+	printf("valor retorno de %d es %f\n",i,*s);
+	return;
 }
 
 int main (int argc, char *argv[])
 {
    // Arreglo de TIDs (identificadores de hilo)
-   pthread_t threads[NUM_THREADS];
 
    int rc, t, p;
    int status;
-float returned = 0.0;
+   float returned = 0.0;
+    
+    if ((shmid = shmget(key, sizeof(float)*NUM_THREADS, IPC_CREAT | 0666)) < 0) {
+        perror("shmget");
+        exit(1);
+    }
+
+    if ((shm = shmat(shmid, NULL, 0)) == (float *) -1) {
+        perror("shmat");
+        exit(1);
+    }
 
    for(t=1; t<=NUM_THREADS; t++){
         p = fork();
 		if(!p)
 		{
-			Contar(t, shmget());
+			Contar(t);
 		}
-            wait(&status);
-			returned += (float) status / DIV;
-			printf("WIFE IN %f\n",returned);
+            		wait(&status);
+			printf("WIFE IN\n");
    }
-
+   
    for(t=1;t<=NUM_THREADS; t++)
     {
         wait(NULL);
     }
+    if ((shmid = shmget(key, size, IPC_CREAT | 0666)) < 0) {
+        perror("shmget");
+        exit(1);
+    }
 
+    if ((shm = shmat(shmid, NULL, 0)) == (float *) -1) {
+        perror("shmat");
+        exit(1);
+    }
+	
+	s=shm;
+	int index=1;
+	while(index<=NUM_THREADS)
+	    {
+		returned += *s;
+		index++;
+		s++; 
+	    }
+	
    printf("El valor final del contador = %f\n",returned);
 
-   // Termina el hilo principal, si hay otros hilos, todos terminan
    exit(0);
 }
