@@ -6,7 +6,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h> 
 
-#define NUM_THREADS 4
+#define NUM_THREADS 1
 #define NUM_VAL 100000
 #define DIV 100000
 #define SHM_SIZE 256
@@ -32,21 +32,14 @@ void Contar(int i)
         perror("shmat");
         exit(1);
 	}
-	
-	printf("Contar in %d\n",i);
 	   for(float j= (float) i ; j<=NUM_VAL ; j+=NUM_THREADS)
 	    {
 	      cont += 1/j;
 	    }
-
-	printf("Contar out %d con %f\n",i,cont);
-	//cont = cont* DIV;
-	
 	s=shm;
 	s=s+i-1;
 	*s=cont;
-	printf("valor retorno de %d es %f\n",i,*s);
-	return;
+	exit(0);
 }
 
 int main (int argc, char *argv[])
@@ -66,26 +59,17 @@ int main (int argc, char *argv[])
         perror("shmat");
         exit(1);
     }
-
    for(t=1; t<=NUM_THREADS; t++){
         p = fork();
 		if(!p)
 		{
 			Contar(t);
 		}
-            		wait(&status);
-			printf("WIFE IN\n");
-   }
-   
-   for(t=1;t<=NUM_THREADS; t++)
-    {
-        wait(NULL);
-    }
-    if ((shmid = shmget(key, size, IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
-        exit(1);
     }
 
+    for(int al=1; al<=NUM_THREADS; al++)
+        wait(&status);
+   
     if ((shm = shmat(shmid, NULL, 0)) == (float *) -1) {
         perror("shmat");
         exit(1);
