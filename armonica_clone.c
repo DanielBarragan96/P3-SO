@@ -21,7 +21,6 @@ int contar()
     {
       cont[i] += (float) 1/j;
     }
-    printf("Valor %d: %f\n",i,cont[i]);
     exit(0);
 }
 

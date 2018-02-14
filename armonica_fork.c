@@ -6,7 +6,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h> 
 
-#define NUM_THREADS 1
+#define NUM_THREADS 2
 #define NUM_VAL 100000
 #define DIV 100000
 #define SHM_SIZE 256
