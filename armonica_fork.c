@@ -6,7 +6,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h> 
 
-#define NUM_THREADS 4
+#define NUM_THREADS 2
 #define NUM_VAL 100000
 #define DIV 100000
 #define SHM_SIZE 256
@@ -59,25 +59,17 @@ int main (int argc, char *argv[])
         perror("shmat");
         exit(1);
     }
-
    for(t=1; t<=NUM_THREADS; t++){
         p = fork();
 		if(!p)
 		{
 			Contar(t);
 		}
-            		wait(&status);
-   }
-   
-   for(t=1;t<=NUM_THREADS; t++)
-    {
-        wait(NULL);
-    }
-    if ((shmid = shmget(key, size, IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
-        exit(1);
     }
 
+    for(int al=1; al<=NUM_THREADS; al++)
+        wait(&status);
+   
     if ((shm = shmat(shmid, NULL, 0)) == (float *) -1) {
         perror("shmat");
         exit(1);
